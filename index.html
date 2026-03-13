@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>FTTH Power Calculator</title>
+<link rel="icon" type="image/png" href="https://ik.imagekit.io/RIDZYSANJU/ChatGPT%20Image%20Mar%2012,%202026,%2009_55_47%20PM.png">
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+</head>
+
+<body class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 min-h-screen flex items-center justify-center p-4">
+
+<div class="w-full max-w-md bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl shadow-xl p-6 text-white">
+
+<h2 class="text-xl sm:text-2xl font-bold text-center mb-6">
+FTTH Splitter Power Calculator
+</h2>
+
+<label class="text-sm text-gray-300">Input Power (dBm)</label>
+
+<input
+type="number"
+id="inputPower"
+placeholder="Example: 10"
+class="w-full mt-2 mb-4 px-4 py-3 rounded-lg bg-slate-800 border border-slate-600 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+/>
+
+<label class="text-sm text-gray-300">Splitter Type</label>
+
+<select
+id="splitter"
+onchange="updateRatios()"
+class="w-full mt-2 mb-4 px-4 py-3 rounded-lg bg-slate-800 border border-slate-600"
+>
+
+<option value="1x2">1×2</option>
+<option value="1x4">1×4</option>
+<option value="1x8">1×8</option>
+<option value="1x16">1×16</option>
+<option value="1x32">1×32</option>
+
+</select>
+
+<label class="text-sm text-gray-300">Split Ratio</label>
+
+<select
+id="ratio"
+class="w-full mt-2 mb-6 px-4 py-3 rounded-lg bg-slate-800 border border-slate-600"
+></select>
+
+<button
+onclick="calculate()"
+class="w-full bg-blue-600 hover:bg-blue-700 active:scale-95 transition rounded-lg py-3 font-semibold"
+>
+Calculate Power
+</button>
+
+<div
+id="result"
+class="mt-6 bg-slate-800 rounded-lg p-4 text-sm"
+>
+Results will appear here
+</div>
+
+</div>
+
+<script>
+
+const ratioData = {
+
+"1x2":[
+{label:"50/50",loss:[3.5,3.5]},
+{label:"60/40",loss:[2.2,4.7]},
+{label:"70/30",loss:[1.7,6]},
+{label:"75/25",loss:[1.4,6.8]},
+{label:"80/20",loss:[1,7]},
+{label:"85/15",loss:[0.8,8.2]},
+{label:"90/10",loss:[0.6,10.5]},
+{label:"95/5",loss:[0.3,13.5]},
+{label:"99/1",loss:[0.05,20]}
+],
+
+"1x4":[
+{label:"25/25/25/25",loss:[7.2,7.2,7.2,7.2]},
+{label:"40/20/20/20",loss:[4,7,7,7]},
+{label:"50/20/15/15",loss:[3.2,7,8.2,8.2]},
+{label:"60/20/10/10",loss:[2.2,7,10,10]}
+],
+
+"1x8":[
+{label:"Equal",loss:[10.5,10.5,10.5,10.5,10.5,10.5,10.5,10.5]}
+],
+
+"1x16":[
+{label:"Equal",loss:Array(16).fill(13.5)}
+],
+
+"1x32":[
+{label:"Equal",loss:Array(32).fill(17)}
+]
+
+}
+
+function updateRatios(){
+
+let splitter=document.getElementById("splitter").value
+let ratioSelect=document.getElementById("ratio")
+
+ratioSelect.innerHTML=""
+
+ratioData[splitter].forEach((r,i)=>{
+
+let option=document.createElement("option")
+option.value=i
+option.text=r.label
+
+ratioSelect.appendChild(option)
+
+})
+
+}
+
+function calculate(){
+
+let input=parseFloat(document.getElementById("inputPower").value)
+
+if(isNaN(input)){
+document.getElementById("result").innerHTML="⚠ Please enter input power"
+return
+}
+
+let splitter=document.getElementById("splitter").value
+let ratioIndex=document.getElementById("ratio").value
+
+let losses=ratioData[splitter][ratioIndex].loss
+
+let resultHTML="<div class='grid grid-cols-2 gap-2'>"
+
+losses.forEach((loss,i)=>{
+
+let power=input-loss
+
+resultHTML+=`<div class="bg-slate-700 p-2 rounded">Port ${i+1}<br><b>${power.toFixed(2)} dBm</b></div>`
+
+})
+
+resultHTML+="</div>"
+
+document.getElementById("result").innerHTML=resultHTML
+
+}
+
+updateRatios()
+
+</script>
+
+</body>
+</html>
